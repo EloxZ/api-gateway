@@ -1,6 +1,6 @@
 const routes = {
     "/dog": "https://dogapi.dog/api/v2",
-    "/http/cat": "https://http.cat"
+    "/cat": "https://meowfacts.herokuapp.com"
 }
 
 export default routes

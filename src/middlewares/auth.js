@@ -7,8 +7,8 @@ const PERMS_HIERARCHY = {
 }
 
 const PATH_PERMS = {
-    "/dog": "guest",
-    "/http/cat": "admin",
+    "/dog": "user",
+    "/cat": "guest",
     "/login": "guest"
 }
 
