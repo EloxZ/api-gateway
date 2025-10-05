@@ -7,16 +7,19 @@ const PERMS_HIERARCHY = {
 }
 
 const PATH_PERMS = {
-    "/dog": "user",
+    "/dog": "guest",
     "/http/cat": "admin",
     "/login": "guest"
 }
 
 const auth = (req, res, next) => {
-    const isGuestPath = Object.keys(PATH_PERMS).includes(req.path) 
-        && PATH_PERMS[req.path] === "guest"
+    console.log(`Incoming request: ${req.method} ${req.path}`)
+    const requiredPerms = Object.entries(PATH_PERMS).find(([prefix]) =>
+        req.path.startsWith(prefix)
+    )?.[1] || "user"
+    console.log(`Required permission for this path: ${requiredPerms}`)
 
-    if (isGuestPath) return next()
+    if (requiredPerms === "guest") return next()
 
     const authHeader = req.headers.authorization
     if (!authHeader) return res.status(401).json({ message: "Authorization header required" })
@@ -27,9 +30,8 @@ const auth = (req, res, next) => {
         const decoded = jwt.verify(token, process.env.JWT_SECRET)
         req.user = decoded
 
-        const requiredPerm = PATH_PERMS[req.path] || "user"
         const userPermLevel = PERMS_HIERARCHY[decoded.role] || 1
-        const requiredPermLevel = PERMS_HIERARCHY[requiredPerm] || 1
+        const requiredPermLevel = PERMS_HIERARCHY[requiredPerms] || 1
 
         if (userPermLevel < requiredPermLevel) {
             return res.status(403).json({ message: "Unauthorized" })

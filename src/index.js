@@ -22,6 +22,10 @@ Object.entries(routes).forEach(([path, serviceUrl]) => {
     app.use(path, createProxy(serviceUrl, path))
 })
 
+app.use((req, res) => {
+    res.status(404).json({ status: 404, error: "Not Found" })
+})
+
 app.listen(PORT, () => {
     console.log(`API Gateway running on port ${PORT}`)
 })

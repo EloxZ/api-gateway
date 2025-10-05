@@ -13,12 +13,20 @@ const createProxy = (serviceUrl, prefix = "") => {
                 console.log(`Proxying request to: ${baseUrl}${newPath}`)
                 return newPath
             },
-        onProxyReq: (proxyReq, req, res) => {
-            proxyReq.setHeader("x-gateway", "NodeAPI-Gateway")
-            proxyReq.setHeader("User-Agent", "Node.js Proxy")
-            proxyReq.setHeader("Accept", "application/json")
-        },
-        logLevel: "debug"
+        on: {
+            proxyReq: (proxyReq, req, res) => {
+                proxyReq.setHeader("x-gateway", "NodeAPI-Gateway")
+                proxyReq.setHeader("User-Agent", "Node.js Proxy")
+                proxyReq.setHeader("Accept", "application/json")
+            },
+            proxyRes: (proxyRes, req, res) => {
+                // You can log or modify the response here if needed
+            },
+            error: (err, req, res) => {
+                console.error("Proxy error:", err)
+                res.status(500).json({ message: "Proxy error", error: err.message })
+            }
+        }
     })
 }
 
